@@ -1,21 +1,12 @@
+import React from 'react';
+import Navbar from './pages/Navbar';
 
-
-import Register from "./pages/register";
 function App() {
-
   return (
-    <>
-     
-      <Register/>
-
-
-
-
-
-
-
-    </>
-  )
+    <div>
+      <Navbar/>
+    </div>
+  );
 }
 
-export default App
+export default App;
