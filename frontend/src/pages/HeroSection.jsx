@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../cssPages/HeroSection.css';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="hero-section">
       <div className="hero-container">
@@ -17,7 +20,7 @@ const HeroSection = () => {
           </p>
           
           <div className="hero-buttons">
-            <button className="btn btn-primary">Shop Now</button>
+            <button className="btn btn-primary" onClick={() => navigate('/products')}>Shop Now</button>
             <button className="btn btn-secondary">View Details</button>
           </div>
         </div>
@@ -27,8 +30,6 @@ const HeroSection = () => {
           <div className="discount-badge">50% off</div>
           <div className="product-showcase">
             <img src="./src/assets/mouse.jpg" alt="Nice pic" width="500" height="390" />
-
-
           </div>
         </div>
       </div>
