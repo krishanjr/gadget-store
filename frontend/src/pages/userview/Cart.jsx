@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { CartContext } from '../../context/CartContext';
 
 const Cart = () => {
-  const cartItems = [
-    { id: 1, name: 'Wireless Mouse', price: 25.99, quantity: 2 },
-    { id: 2, name: 'Mechanical Keyboard', price: 79.99, quantity: 1 },
-    { id: 3, name: 'USB-C Hub', price: 45.0, quantity: 1 },
-  ];
+  const { cartItems, removeFromCart } = useContext(CartContext);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const taxRate = 0.07;
@@ -13,7 +10,7 @@ const Cart = () => {
   const total = subtotal + taxes;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 pt-24 py-10">
+    <div className="max-w-5xl mx-auto px-4 py-10">
       <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Your Cart</h2>
 
       {cartItems.length === 0 ? (
@@ -41,7 +38,7 @@ const Cart = () => {
                       ${(item.price * item.quantity).toFixed(2)}
                     </td>
                     <td className="py-4 px-6 text-center">
-                      <button className="text-red-500 hover:underline">Remove</button>
+                      <button className="text-red-500 hover:underline" onClick={() => removeFromCart(item.id)}>Remove</button>
                     </td>
                   </tr>
                 ))}
