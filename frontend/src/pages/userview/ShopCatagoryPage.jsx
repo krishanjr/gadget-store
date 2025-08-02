@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import featuredProducts from '../../data/products';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import axios from "axios";
+import BASE_URL from '../../utils/api';
 
 const ShopCategoriesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-
-  const categories = [
+  const [products, setProducts] = useState([]);
+  let categories = []
+  useEffect(() => {
+    axios.get(BASE_URL + "/products/")
+      .then((res) => {
+        let data = res.data;
+        data.forEach(element => {
+          element.inStock = element.stock > 0;
+        });
+        setProducts(data);
+      })
+      .catch((err) => {
+        setError("Failed to fetch products.");
+        console.error(err);
+      });
+  }, []);
+  const categoriess = [
     {
       id: 1,
       name: 'Phones',
@@ -24,16 +42,49 @@ const ShopCategoriesPage = () => {
     }
   ];
 
-  // Filter categories and products based on search query
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
-  const filteredProducts = featuredProducts.filter(product =>
+  const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  categories = Object.entries(
+    products.reduce((acc, product) => {
+      console.log(product);
+      const category = product.category || "Uncategorized";
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([name, count], index) => ({
+    id: index + 1,
+    name,
+    productCount: `${count} Product${count > 1 ? "s" : ""}`,
+  }));
+  console.log(categories);
+  // Filter categories and products based on search query
+const filteredCategories = useMemo(() => {
+  if (!products.length) return [];
 
+  const categoryCount = products.reduce((acc, product) => {
+    const category = product.category || "Uncategorized";
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const allCategories = Object.entries(categoryCount).map(([name, count], index) => ({
+    id: index + 1,
+    name,
+    productCount: `${count} Product${count > 1 ? "s" : ""}`,
+  }));
+
+  return !searchQuery
+    ? allCategories
+    : allCategories.filter(cat =>
+        cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+}, [products, searchQuery]);
+
+
+  console.log("filteredCategories " , filteredCategories);
   return (
     <div className="max-w-7xl mx-auto p-4 pt-24">
       {/* Search Section */}

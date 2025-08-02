@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Grid, List, Star, ChevronDown } from 'lucide-react';
 import { CartContext } from '../../context/CartContext';
+import BASE_URL from '../../utils/api';
+import axios from "axios";
 
 const AllProducts = () => {
   // Fix lint error: 'ChevronDown' used but not defined or other error at line 19 col 9
@@ -27,139 +29,23 @@ const AllProducts = () => {
   }, [location.search]);
 
   // Sample product data
-  const products = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro",
-      description: "Latest iPhone with A17 Pro chip and titanium design",
-      price: 999,
-      originalPrice: 1299,
-      rating: 4.5,
-      reviews: 45,
-      category: "Phones",
-      brand: "Apple",
-      image: "/api/placeholder/300/200",
-      badges: ["New", "Sale"],
-      inStock: true
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S24 Ultra",
-      description: "Flagship Android with S Pen and AI features",
-      price: 1199,
-      rating: 4.7,
-      reviews: 32,
-      category: "Phones",
-      brand: "Samsung",
-      image: "/api/placeholder/300/200",
-      badges: ["Popular"],
-      inStock: true
-    },
-    {
-      id: 3,
-      name: "Google Pixel 8 Pro",
-      description: "Pure Android experience with advanced AI photography",
-      price: 899,
-      rating: 4.6,
-      reviews: 28,
-      category: "Phones",
-      brand: "Google",
-      image: "/api/placeholder/300/200",
-      badges: [],
-      inStock: true
-    },
-    {
-      id: 4,
-      name: "OnePlus 12",
-      description: "Flagship killer with fast charging and smooth performance",
-      price: 799,
-      rating: 4.5,
-      reviews: 19,
-      category: "Phones",
-      brand: "OnePlus",
-      image: "/api/placeholder/300/200",
-      badges: [],
-      inStock: true
-    },
-    {
-      id: 5,
-      name: "MacBook Pro M3",
-      description: "Professional laptop with M3 chip for creative workflows",
-      price: 1999,
-      rating: 4.9,
-      reviews: 67,
-      category: "Laptops",
-      brand: "Apple",
-      image: "/api/placeholder/300/200",
-      badges: ["Popular"],
-      inStock: true
-    },
-    {
-      id: 6,
-      name: "Dell XPS 13",
-      description: "Premium ultrabook with InfinityEdge display",
-      price: 1299,
-      rating: 4.5,
-      reviews: 43,
-      category: "Laptops",
-      brand: "Dell",
-      image: "/api/placeholder/300/200",
-      badges: ["Out of Stock"],
-      inStock: false
-    },
-    {
-      id: 7,
-      name: "HP Spectre x360",
-      description: "2-in-1 convertible laptop with premium design",
-      price: 1399,
-      rating: 4.4,
-      reviews: 25,
-      category: "Laptops",
-      brand: "HP",
-      image: "/api/placeholder/300/200",
-      badges: [],
-      inStock: true
-    },
-    {
-      id: 8,
-      name: "Lenovo ThinkPad X1 Carbon",
-      description: "Business laptop with legendary ThinkPad reliability",
-      price: 1599,
-      rating: 4.6,
-      reviews: 38,
-      category: "Laptops",
-      brand: "Lenovo",
-      image: "/api/placeholder/300/200",
-      badges: [],
-      inStock: true
-    },
-    {
-      id: 9,
-      name: "AirPods Pro 2",
-      description: "Premium wireless earbuds with active noise cancellation",
-      price: 249,
-      rating: 4.7,
-      reviews: 156,
-      category: "Accessories",
-      brand: "Apple",
-      image: "/api/placeholder/300/200",
-      badges: ["New"],
-      inStock: true
-    },
-    {
-      id: 10,
-      name: "Sony WH-1000XM5",
-      description: "Industry-leading noise canceling headphones",
-      price: 399,
-      rating: 4.8,
-      reviews: 89,
-      category: "Accessories",
-      brand: "Sony",
-      image: "/api/placeholder/300/200",
-      badges: [],
-      inStock: true
-    }
-  ];
+
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    axios.get(BASE_URL + "/products/")
+      .then((res) => {
+        let data = res.data;
+        data.forEach(element => {
+          element.inStock = element.stock > 0;
+        });
+        setProducts(data);
+        console.log(data);
+      })
+      .catch((err) => {
+        setError("Failed to fetch products.");
+        console.error(err);
+      });
+  }, []);
 
   const categories = [
     { name: 'All', count: products.length },
@@ -280,10 +166,10 @@ const AllProducts = () => {
           <div key={product.id} className="border border-gray-300 rounded-lg p-4 flex flex-col">
             {/* Product Image */}
             <div className="relative mb-4">
-              <img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-md" />
-              {/* Badges */}
+              <img src={product.images || './src/assets/mouse.jpg'} alt={product.name} className="w-full h-40 object-cover rounded-md" />
+              {/* tags */}
               <div className="absolute top-0 left-0 flex space-x-1 p-2">
-                {product.badges.map(badge => (
+                {product.tags.map(badge => (
                   <span
                     key={badge}
                     className={`text-xs font-bold text-white px-2 py-1 rounded ${

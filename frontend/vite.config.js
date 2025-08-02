@@ -11,4 +11,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    exclude: ["gadget-store"], // 👈 exclude local dependency from pre-bundling
+  },
+  build: {
+    rollupOptions: {
+      external: ["gadget-store"], // 👈 avoid bundling it entirely (especially for preview/build)
+    },
+  },
 })

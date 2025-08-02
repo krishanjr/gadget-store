@@ -28,7 +28,7 @@ const ProductDetails = () => {
         {/* Product Image */}
         <div className="md:w-1/2">
           <img
-            src={product.image || './src/assets/mouse.jpg'}
+            src={product.images || './src/assets/mouse.jpg'}
             alt={product.name}
             className="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
           />

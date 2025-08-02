@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Search, User, ShoppingCart, Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import { AuthContext } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 const Navbar = () => {
+  const { user, logout } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,7 +12,7 @@ const Navbar = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const navigate = useNavigate();
-
+  const cartItems = useCart();
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleCategories = () => setIsCategoriesOpen(!isCategoriesOpen);
 
@@ -124,10 +126,9 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => {
-                    // Placeholder logout function - replace with actual logout logic
-                    console.log('Logout clicked');
-                    setIsProfileDropdownOpen(false);
-                    navigate('/login');
+                logout();
+                setIsProfileDropdownOpen(false);
+                navigate('/login');
                   }}
                   className="block w-full text-left px-4 py-2 hover:bg-blue-100"
                 >
@@ -143,25 +144,29 @@ const Navbar = () => {
           >
             <ShoppingCart size={20} className="text-gray-600 group-hover:text-blue-600 transition-colors" />
             <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs text-white font-bold flex items-center justify-center animate-pulse">
-              3
+              {cartItems.length} 5
             </span>
           </button>
           
           <div className="w-px h-6 bg-gray-300 mx-2"></div>
           
-          <button 
-            onClick={() => navigate('/login')}
-            className="px-4 py-2 mr-4 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium"
-          >
-            Login
-          </button>
-          
-          <button 
-            onClick={() => navigate('/signup')}
-            className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
-          >
-            Sign Up
-          </button>
+          {!user && (
+            <>
+              <button 
+                onClick={() => navigate('/login')}
+                className="px-4 py-2 mr-4 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium"
+              >
+                Login
+              </button>
+              
+              <button 
+                onClick={() => navigate('/signup')}
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
+              >
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -235,32 +240,37 @@ const Navbar = () => {
 
           {/* Mobile Actions */}
           <div className="border-t border-gray-200 pt-6 flex flex-col gap-3">
-            <button 
-              onClick={() => { toggleMobileMenu(); navigate('/profile'); }}
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300"
-            >
-              <User size={18} /> Profile
-            </button>
-            <button 
-              onClick={() => { toggleMobileMenu(); navigate('/cart'); }}
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300"
-            >
-              <ShoppingCart size={18} /> Cart (3)
-            </button>
-            <div className="flex gap-3 mt-4">
-              <button 
-                onClick={toggleMobileMenu}
-                className="flex-1 px-4 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium border border-gray-200 rounded-xl hover:border-blue-300"
-              >
-                Login
-              </button>
-              <button 
-                onClick={toggleMobileMenu}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md font-medium"
-              >
-                Sign Up
-              </button>
-            </div>
+            { !user ? (
+              <>
+                <button 
+                  onClick={toggleMobileMenu}
+                  className="flex-1 px-4 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium border border-gray-200 rounded-xl hover:border-blue-300"
+                >
+                  Login
+                </button>
+                <button 
+                  onClick={toggleMobileMenu}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md font-medium"
+                >
+                  Sign Up
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => { toggleMobileMenu(); navigate('/profile'); }}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300"
+                >
+                  <User size={18} /> Profile
+                </button>
+                <button 
+                  onClick={() => { toggleMobileMenu(); navigate('/cart'); }}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300"
+                >
+                  <ShoppingCart size={18} /> Cart (3)
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

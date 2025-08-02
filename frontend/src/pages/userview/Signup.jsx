@@ -186,9 +186,14 @@ const Signup = () => {
             <button
               type="button"
               onClick={handleSubmit}
-              className="w-full mt-8 py-4 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-blue-500/25"
+              disabled={loading}
+              className={`w-full mt-8 py-4 px-6 text-white rounded-lg font-semibold text-lg focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all duration-300 transform shadow-lg ${
+                loading
+                  ? 'bg-gray-600 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-[1.02] hover:shadow-blue-500/25'
+              }`}
             >
-              Create Account
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
 
             {/* Login Link */}

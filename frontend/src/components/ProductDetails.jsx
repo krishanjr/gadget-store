@@ -28,7 +28,7 @@ const ProductDetails = () => {
         {/* Product Image */}
         <div className="md:w-1/2">
           <img
-            src={product.image || './src/assets/mouse.jpg'}
+            src={product.images || './src/assets/mouse.jpg'}
             alt={product.name}
             className="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
           />
@@ -42,10 +42,7 @@ const ProductDetails = () => {
 
           {/* Additional Features */}
           <ul className="mb-6 list-disc list-inside text-gray-700">
-            <li>High quality and durable</li>
-            <li>Classic design with modern features</li>
-            <li>1 year warranty included</li>
-            <li>Free shipping and returns</li>
+            {Object.entries(product.specifications).map(specs => (<li>{specs}</li>))}
           </ul>
 
           <div className="flex gap-4">

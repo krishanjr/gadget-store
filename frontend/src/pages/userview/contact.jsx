@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, User, MessageCircle } from 'lucide-react';
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import BASE_URL from '../../utils/api';
 
 export default function ContactPage() {
+    const { user } = useAuth();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,9 +21,29 @@ export default function ContactPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Thank you for your message! We\'ll get back to you soon.');
+    console.log(user);
+
+    const userIds = !user ? null: user.id;
+    let data = {
+      userId: userIds,
+      fullName: formData.name,
+      emailAddress: formData.email,
+      subject: formData.subject,
+      message: formData.message,
+    };
+    console.log(data);
+    try {
+      // const response = await axios.post(BASE_URL + "/orders/", orderData);
+      const res = await axios.post(BASE_URL + "/messages/", data);
+      alert('Thank you for your message! We\'ll get back to you soon.');
+      console.log("Updated:", res.data);
+    } catch (err) {
+      console.error("Failed to update order:", err);
+      alert('Failed to message');
+
+    }
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 

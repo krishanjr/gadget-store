@@ -1,9 +1,11 @@
-  import React, { useState } from 'react';
+  import React, { useState, useEffect } from 'react';
 import { 
   User, Mail, Phone, MapPin, Lock, Camera, Save, 
   Edit3, Eye, EyeOff, Bell, Shield, Trash2, 
   CheckCircle, AlertCircle, Calendar, CreditCard
 } from 'lucide-react';
+import BASE_URL from '../../utils/api';
+import axios from "axios";
 
 const ManageProfile = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -14,18 +16,45 @@ const ManageProfile = () => {
 
   // Profile data state
   const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1990-05-15',
-    gender: 'male',
-    address: '123 Main Street',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    country: 'United States'
+    firstName: "Krishan",
+    lastName: "Humagain",
+    email: "krishan@krishan.com",
+    phone: "9063544892",
+    dateOfBirth: "2009-10-11",
+    gender: "Male",
+    address: "Banepa",
+    city: "Banepa",
+    state: "Bagmati",
+    zipCode: "45210",
+    country: "Nepal"
   });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+
+        // Ensure all expected fields exist with fallback defaults
+        setProfileData({
+          firstName: user.firstName ?? "Krishan",
+          lastName: user.lastName ?? "Humagain",
+          email: user.email ?? "krishan@krishan.com",
+          phone: user.phone ?? "9063544892",
+          dateOfBirth: user.dateOfBirth ?? "2009-10-11",
+          gender: user.gender ?? "Male",
+          address: user.address ?? "Banepa",
+          city: user.city ?? "Banepa",
+          state: user.state ?? "Bagmati",
+          zipCode: user.zipCode ?? "45210",
+          country: user.country ?? "Nepal",
+        });
+      } catch (err) {
+        console.error("Error parsing localStorage user:", err);
+      }
+    }
+  }, []);
 
   // Security settings state
   const [securityData, setSecurityData] = useState({
@@ -58,16 +87,39 @@ const ManageProfile = () => {
   };
 
   const handleSaveProfile = () => {
-    // Simulate save operation
-    setNotifications(prev => [...prev, { 
-      id: Date.now(), 
-      type: 'success', 
-      message: 'Profile updated successfully!' 
-    }]);
-    setIsEditing(false);
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== prev[0]?.id));
-    }, 3000);
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        axios.put(BASE_URL + `/users/${user.id}`, profileData)
+          .then((res) => {
+            let data = res.data;
+            setNotifications(prev => [...prev, { 
+              id: Date.now(), 
+              type: 'success', 
+              message: 'Profile updated successfully!' 
+            }]);
+            console.log(data);
+          })
+          .catch((err) => {
+            setNotifications(prev => [...prev, { 
+              id: Date.now(), 
+              type: 'success', 
+              message: 'Error Profile cannot be updated!' 
+            }]);
+            // setError("Failed to fetch messages.");
+            console.error(err);
+        });
+
+        setIsEditing(false);
+        setTimeout(() => {
+          setNotifications(prev => prev.filter(n => n.id !== prev[0]?.id));
+        }, 3000);
+      } catch (err) {
+        console.error("Error parsing localStorage user:", err);
+      }
+    }
   };
 
   const handlePasswordChange = () => {
@@ -79,12 +131,42 @@ const ManageProfile = () => {
       }]);
       return;
     }
-    
-    setNotifications(prev => [...prev, { 
-      id: Date.now(), 
-      type: 'success', 
-      message: 'Password changed successfully!' 
-    }]);
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      setNotifications(prev => [...prev, { 
+        id: Date.now(), 
+        type: '', 
+        message: 'PError!' 
+      }]);
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== prev[0]?.id));
+      }, 3000);
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    axios.put(BASE_URL + `/users/${user.id}`, {"password":securityData.newPassword})
+      .then((res) => {
+        let data = res.data;
+        setNotifications(prev => [...prev, { 
+          id: Date.now(), 
+          type: 'success', 
+          message: 'Password changed successfully!' 
+        }]);
+        console.log(data);
+      })
+      .catch((err) => {
+        setNotifications(prev => [...prev, { 
+          id: Date.now(), 
+          type: 'success', 
+          message: 'Error Password cannot be changed' 
+        }]);
+        // setError("Failed to fetch messages.");
+        console.error(err);
+    });
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== prev[0]?.id));
+    }, 3000);
     
     setSecurityData(prev => ({ 
       ...prev, 

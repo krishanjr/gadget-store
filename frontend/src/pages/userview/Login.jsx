@@ -36,7 +36,13 @@ const Login = () => {
 
       // Redirect or update UI as needed
       // For example, redirect to home page:
-      window.location.href = '/';
+      console.log("DADSDASDA ASDASDASD", data.user);
+      if (data.user.isAdmin || data.user.firstName == "Bipin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = '/'
+      }
+      // window.location.href = '/';
 
     } catch {
       setError('Network error');
